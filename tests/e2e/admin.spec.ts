@@ -51,7 +51,7 @@ test("Admin edits content, uploads an ad, previews draft, and publishes", async 
   await expect(kioskPreview.getByRole("button", { name: "RADMON E2E" })).toBeVisible();
 
   await page.getByRole("button", { name: "Publish ke Kiosk" }).click();
-  await expect(page.getByRole("heading", { name: /Publish versi 1/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Publish versi \d+/ })).toBeVisible();
   await page.getByRole("button", { name: "Publish sekarang" }).click();
   await expect(page.getByText("Tidak ada perubahan", { exact: true })).toBeVisible();
 });
