@@ -4,7 +4,6 @@ on:
   pull_request:
 permissions:
   contents: read
-  issues: write
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -16,35 +15,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - name: Run unit tests with diagnostic capture
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run test:unit 2>&1 | tee unit.log
-          code=${PIPESTATUS[0]}
-          if [ "$code" -ne 0 ]; then
-            tail -c 50000 unit.log > unit-tail.log
-            gh issue comment 1 --body-file unit-tail.log
-            exit "$code"
-          fi
+      - run: npm run test:unit
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - name: Run E2E with diagnostic capture
-        shell: bash
+      - run: npm run test:e2e
         env:
           CI: "true"
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run test:e2e 2>&1 | tee e2e.log
-          code=${PIPESTATUS[0]}
-          if [ "$code" -ne 0 ]; then
-            tail -c 50000 e2e.log > e2e-tail.log
-            gh issue comment 1 --body-file e2e-tail.log
-            exit "$code"
-          fi
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4
