@@ -9,7 +9,11 @@ data/*
 !data/.gitkeep
 storage/*
 !storage/.gitkeep
+storage-e2e*/
+backups/
+backups-e2e*/
 logs/
+logs-e2e*/
 playwright-report/
 test-results/
 *.log
