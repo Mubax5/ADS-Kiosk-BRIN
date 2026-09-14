@@ -1,27 +1,30 @@
 import cookie from "@fastify/cookie";
-import rateLimit from "@fastify/rate-limit";
+import helmet from "@fastify/helmet";
 import multipart from "@fastify/multipart";
+import rateLimit from "@fastify/rate-limit";
+import staticPlugin from "@fastify/static";
+import { existsSync } from "node:fs";
 import Fastify, { type FastifyInstance } from "fastify";
+import { createKioskAuth, ensureKioskDevice } from "./auth/kioskAuth.js";
 import type { SqliteDatabase } from "./db/database.js";
-import { registerAuthRoutes } from "./routes/auth.js";
 import { createMediaService } from "./media/mediaService.js";
-import { registerAdminMediaRoutes } from "./routes/adminMedia.js";
-import { registerPublicMediaRoutes } from "./routes/media.js";
-import { createSettingsService } from "./services/settingsService.js";
-import { createMenuService } from "./services/menuService.js";
-import { createAdService } from "./services/adService.js";
-import { createUserService } from "./services/userService.js";
-import { createDashboardService } from "./services/dashboardService.js";
-import { registerAdminMenuRoutes } from "./routes/adminMenu.js";
+import { createPublishService } from "./publish/publishService.js";
 import { registerAdminAdsRoutes } from "./routes/adminAds.js";
+import { registerAdminDashboardRoute } from "./routes/adminDashboard.js";
+import { registerAdminMediaRoutes } from "./routes/adminMedia.js";
+import { registerAdminMenuRoutes } from "./routes/adminMenu.js";
+import { registerAdminPreviewRoute } from "./routes/adminPreview.js";
+import { registerAdminPublishRoutes } from "./routes/adminPublish.js";
 import { registerAdminSettingsRoutes } from "./routes/adminSettings.js";
 import { registerAdminUserRoutes } from "./routes/adminUsers.js";
-import { registerAdminDashboardRoute } from "./routes/adminDashboard.js";
-import { createPublishService } from "./publish/publishService.js";
-import { createKioskAuth, ensureKioskDevice } from "./auth/kioskAuth.js";
-import { registerAdminPublishRoutes } from "./routes/adminPublish.js";
-import { registerAdminPreviewRoute } from "./routes/adminPreview.js";
+import { registerAuthRoutes } from "./routes/auth.js";
 import { registerKioskRoutes } from "./routes/kiosk.js";
+import { registerPublicMediaRoutes } from "./routes/media.js";
+import { createAdService } from "./services/adService.js";
+import { createDashboardService } from "./services/dashboardService.js";
+import { createMenuService } from "./services/menuService.js";
+import { createSettingsService } from "./services/settingsService.js";
+import { createUserService } from "./services/userService.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -39,13 +42,53 @@ export type BuildAppOptions = {
   maxUploadBytes?: number;
   kioskDeviceId?: string;
   kioskDeviceToken?: string | undefined;
+  adminDistPath?: string;
+  kioskDistPath?: string;
 };
+
+const ADMIN_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'";
+const KIOSK_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https: http:; media-src 'self' blob:; connect-src 'self' https: http:; frame-src https: http:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'";
+
+async function registerStaticApps(app: FastifyInstance, adminDistPath?: string, kioskDistPath?: string) {
+  if (!adminDistPath || !kioskDistPath || !existsSync(adminDistPath) || !existsSync(kioskDistPath)) return;
+
+  await app.register(staticPlugin, {
+    root: adminDistPath,
+    prefix: "/admin/",
+    wildcard: false,
+    index: false,
+    dotfiles: "deny",
+  });
+  await app.register(staticPlugin, {
+    root: kioskDistPath,
+    prefix: "/kiosk/",
+    wildcard: false,
+    index: false,
+    dotfiles: "deny",
+    decorateReply: false,
+  });
+
+  app.get("/admin/", async (_request, reply) => reply.sendFile("index.html", adminDistPath));
+  app.get("/kiosk/", async (_request, reply) => reply.sendFile("index.html", kioskDistPath));
+  app.get("/admin/*", async (_request, reply) => reply.sendFile("index.html", adminDistPath));
+  app.get("/kiosk/*", async (_request, reply) => reply.sendFile("index.html", kioskDistPath));
+}
 
 export async function buildApp(options: BuildAppOptions): Promise<FastifyInstance> {
   const app = Fastify({ logger: options.logger ?? false });
   app.decorate("db", options.db);
   app.decorateRequest("cmsUser");
   app.decorateRequest("cmsSession");
+
+  await app.register(helmet, {
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  });
+  app.addHook("onSend", async (request, reply, payload) => {
+    if (request.url.startsWith("/admin")) reply.header("Content-Security-Policy", ADMIN_CSP);
+    else if (request.url.startsWith("/kiosk")) reply.header("Content-Security-Policy", KIOSK_CSP);
+    return payload;
+  });
 
   await app.register(cookie, { secret: options.cookieSecret });
   await app.register(rateLimit, { global: false });
@@ -77,6 +120,11 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   await registerAdminPublishRoutes(app, publishService);
   await registerAdminPreviewRoute(app, settingsService);
   await registerKioskRoutes(app, publishService, kioskDeviceId, requireKiosk);
+  await registerStaticApps(app, options.adminDistPath, options.kioskDistPath);
+
+  app.setNotFoundHandler((request, reply) => {
+    reply.code(404).send({ error: "NOT_FOUND", message: `Route ${request.method} ${request.url} not found` });
+  });
 
   app.setErrorHandler((error, _request, reply) => {
     app.log.error(error);
