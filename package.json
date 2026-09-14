@@ -11,7 +11,11 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build --workspace @ads-kiosk/shared && npm run build --workspace @ads-kiosk/admin && npm run build --workspace @ads-kiosk/kiosk && npm run build --workspace @ads-kiosk/server",
+    "start": "node apps/server/dist/index.js",
+    "bootstrap:admin": "npm run bootstrap:admin --workspace @ads-kiosk/server",
+    "backup": "npm run backup --workspace @ads-kiosk/server",
+    "restore": "npm run restore --workspace @ads-kiosk/server --",
     "test": "npm run test --workspaces --if-present",
     "test:unit": "npm run test --workspaces --if-present -- --run",
     "test:e2e": "playwright test",
