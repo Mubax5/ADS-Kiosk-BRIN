@@ -5,7 +5,6 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  issues: write
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -15,17 +14,6 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - name: Typecheck with diagnostic capture
-        shell: bash
-        run: |
-          set +e
-          npm run typecheck > typecheck.log 2>&1
-          code=$?
-          if [ "$code" -ne 0 ]; then
-            gh issue comment 1 --body-file typecheck.log
-            exit "$code"
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - run: npm run typecheck
       - run: npm run test:unit
       - run: npm run build
