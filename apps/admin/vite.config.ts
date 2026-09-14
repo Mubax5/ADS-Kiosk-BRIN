@@ -5,8 +5,4 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   base: "/admin/",
   plugins: [react(), tailwindcss()],
-  test: {
-    environment: "jsdom",
-    setupFiles: ["./src/test/setup.ts"],
-  },
 });
