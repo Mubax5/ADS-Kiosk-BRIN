@@ -24,5 +24,5 @@ test("Kiosk runs the touch flow and resets an inactive visitor session", async (
 
   await page.clock.fastForward(60_000);
   await expect(page.getByRole("button", { name: "Sentuh untuk Mulai" })).toBeVisible();
-  await expect(page.queryByText?.("Konten KIOSK siap dibaca.") ?? page.getByText("Konten KIOSK siap dibaca.")).not.toBeVisible();
+  await expect(page.getByText("Konten KIOSK siap dibaca.")).toHaveCount(0);
 });
