@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@ads-kiosk/shared": "*",
     "@cloudflare/kumo": "latest",
     "@phosphor-icons/react": "latest",
     "react": "^19.1.1",

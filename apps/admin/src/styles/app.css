@@ -1,0 +1,116 @@
+@source "../../../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+@import "@cloudflare/kumo/styles/tailwind";
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 1024px;
+  background: var(--color-kumo-base, #f7f7f8);
+}
+
+.cms-shell {
+  min-height: 100vh;
+}
+
+.cms-sidebar-nav {
+  display: contents;
+}
+
+.cms-main {
+  min-width: 0;
+  min-height: 100vh;
+  padding: 2rem;
+  overflow: auto;
+}
+
+.cms-page {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.cms-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cms-page-title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  font-weight: 650;
+}
+
+.cms-page-description {
+  max-width: 60rem;
+  margin: 0.45rem 0 0;
+  color: var(--color-kumo-subtle, #5f6368);
+}
+
+.cms-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.cms-metric {
+  padding: 1rem;
+}
+
+.cms-metric-label {
+  margin: 0 0 0.5rem;
+  color: var(--color-kumo-subtle, #5f6368);
+  font-size: 0.875rem;
+}
+
+.cms-metric-value {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.login-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 2rem;
+}
+
+.login-card {
+  width: min(420px, 100%);
+  padding: 1.5rem;
+}
+
+.login-card h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 650;
+}
+
+.login-card p {
+  margin: 0 0 1.5rem;
+}
+
+.login-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.login-error {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 1100px) {
+  .cms-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
