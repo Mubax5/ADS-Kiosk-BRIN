@@ -20,6 +20,7 @@ import { registerAdminDashboardRoute } from "./routes/adminDashboard.js";
 import { createPublishService } from "./publish/publishService.js";
 import { createKioskAuth, ensureKioskDevice } from "./auth/kioskAuth.js";
 import { registerAdminPublishRoutes } from "./routes/adminPublish.js";
+import { registerAdminPreviewRoute } from "./routes/adminPreview.js";
 import { registerKioskRoutes } from "./routes/kiosk.js";
 
 declare module "fastify" {
@@ -74,6 +75,7 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   await registerAdminUserRoutes(app, userService);
   await registerAdminDashboardRoute(app, dashboardService);
   await registerAdminPublishRoutes(app, publishService);
+  await registerAdminPreviewRoute(app, settingsService);
   await registerKioskRoutes(app, publishService, kioskDeviceId, requireKiosk);
 
   app.setErrorHandler((error, _request, reply) => {
