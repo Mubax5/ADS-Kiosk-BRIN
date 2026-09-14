@@ -1,11 +1,11 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const PNG_1X1 = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z+0cAAAAASUVORK5CYII=",
   "base64",
 );
 
-async function login(page: Parameters<typeof test>[0] extends never ? never : any) {
+async function login(page: Page) {
   await page.goto("/admin/");
   await page.getByLabel("Username").fill("e2e-admin");
   await page.getByLabel("Password").fill("e2e-password-for-tests-only");
