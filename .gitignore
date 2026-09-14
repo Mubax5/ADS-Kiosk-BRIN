@@ -1,0 +1,16 @@
+.worktrees/
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+data/*
+!data/.gitkeep
+storage/*
+!storage/.gitkeep
+logs/
+playwright-report/
+test-results/
+*.log
+.DS_Store
