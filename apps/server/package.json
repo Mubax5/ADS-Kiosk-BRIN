@@ -6,13 +6,17 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "bootstrap:admin": "node dist/scripts/createAdmin.js"
   },
   "dependencies": {
     "@ads-kiosk/shared": "*",
     "better-sqlite3": "^12.2.0",
     "dotenv": "^17.2.1",
-    "zod": "^4.1.5"
+    "zod": "^4.1.5",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/rate-limit": "^10.3.0",
+    "fastify": "^5.6.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
