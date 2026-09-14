@@ -7,6 +7,16 @@ import { registerAuthRoutes } from "./routes/auth.js";
 import { createMediaService } from "./media/mediaService.js";
 import { registerAdminMediaRoutes } from "./routes/adminMedia.js";
 import { registerPublicMediaRoutes } from "./routes/media.js";
+import { createSettingsService } from "./services/settingsService.js";
+import { createMenuService } from "./services/menuService.js";
+import { createAdService } from "./services/adService.js";
+import { createUserService } from "./services/userService.js";
+import { createDashboardService } from "./services/dashboardService.js";
+import { registerAdminMenuRoutes } from "./routes/adminMenu.js";
+import { registerAdminAdsRoutes } from "./routes/adminAds.js";
+import { registerAdminSettingsRoutes } from "./routes/adminSettings.js";
+import { registerAdminUserRoutes } from "./routes/adminUsers.js";
+import { registerAdminDashboardRoute } from "./routes/adminDashboard.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -35,6 +45,11 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   const maxUploadBytes = options.maxUploadBytes ?? 524_288_000;
   await app.register(multipart, { limits: { fileSize: maxUploadBytes, files: 1, parts: 1 }, throwFileSizeLimit: true });
   const mediaService = createMediaService(app.db, options.storagePath ?? "./storage", maxUploadBytes);
+  const settingsService = createSettingsService(app.db);
+  const menuService = createMenuService(app.db, settingsService);
+  const adService = createAdService(app.db, settingsService);
+  const userService = createUserService(app.db);
+  const dashboardService = createDashboardService(app.db, settingsService);
 
   app.get("/api/v1/health", async () => ({ ok: true }));
   await registerAuthRoutes(app, {
@@ -43,6 +58,11 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   });
   await registerAdminMediaRoutes(app, mediaService);
   await registerPublicMediaRoutes(app, mediaService);
+  await registerAdminMenuRoutes(app, menuService);
+  await registerAdminAdsRoutes(app, adService);
+  await registerAdminSettingsRoutes(app, settingsService);
+  await registerAdminUserRoutes(app, userService);
+  await registerAdminDashboardRoute(app, dashboardService);
 
   app.setErrorHandler((error, _request, reply) => {
     app.log.error(error);
@@ -53,8 +73,12 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
       ? (error as { statusCode: number }).statusCode
       : 500;
     const message = error instanceof Error ? error.message : "Internal server error";
+    const errorCode = typeof error === "object" && error !== null && "code" in error
+      && typeof (error as { code?: unknown }).code === "string"
+      ? (error as { code: string }).code
+      : "REQUEST_ERROR";
     reply.code(statusCode >= 400 ? statusCode : 500).send({
-      error: statusCode < 500 ? "REQUEST_ERROR" : "INTERNAL_ERROR",
+      error: statusCode < 500 ? errorCode : "INTERNAL_ERROR",
       message: statusCode < 500 ? message : "Internal server error",
     });
   });

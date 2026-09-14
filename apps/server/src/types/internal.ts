@@ -1,0 +1,10 @@
+import type { createMenuService } from "../services/menuService.js";
+import type { createAdService } from "../services/adService.js";
+import type { createSettingsService } from "../services/settingsService.js";
+import type { createUserService } from "../services/userService.js";
+import type { createDashboardService } from "../services/dashboardService.js";
+export type ReturnTypeMenuService = ReturnType<typeof createMenuService>;
+export type ReturnTypeAdService = ReturnType<typeof createAdService>;
+export type ReturnTypeSettingsService = ReturnType<typeof createSettingsService>;
+export type ReturnTypeUserService = ReturnType<typeof createUserService>;
+export type ReturnTypeDashboardService = ReturnType<typeof createDashboardService>;
