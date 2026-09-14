@@ -27,7 +27,7 @@ async function matchNewestContent(request: Request) {
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(APP_SHELL_CACHE);
-    const urls = self.__WB_MANIFEST.map((entry) => new URL(entry.url, self.location.origin).toString());
+    const urls = self.__WB_MANIFEST.map((entry) => new URL(entry.url, self.registration.scope).toString());
     await cache.addAll(urls);
     await self.skipWaiting();
   })());
