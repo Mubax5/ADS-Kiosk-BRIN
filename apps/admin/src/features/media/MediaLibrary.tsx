@@ -1,5 +1,4 @@
-import { Badge, Button, Table } from "@cloudflare/kumo";
-import { LayerDialog } from "@cloudflare/kumo/components/layer-dialog";
+import { Badge, Button, Dialog, Table } from "@cloudflare/kumo";
 import { useRef, useState } from "react";
 import { apiRequest } from "../../api/client";
 import { useAuth } from "../../auth/AuthProvider";
@@ -66,14 +65,21 @@ export function MediaLibrary({ items, onChange }: { items: MediaRecord[]; onChan
           </Table.Row>
         ))}</Table.Body>
       </Table>
-      <LayerDialog.Root open={Boolean(deleteItem)} onOpenChange={(next: boolean) => !next && setDeleteItem(null)} dismissDisabled={busy}>
-        <LayerDialog.Content closeLabel="Tutup">
-          <LayerDialog.Title>Hapus media?</LayerDialog.Title>
-          <LayerDialog.Description>{deleteItem?.originalName}</LayerDialog.Description>
-          <LayerDialog.Body>File yang masih digunakan draft atau versi terbit tidak dapat dihapus.</LayerDialog.Body>
-          <LayerDialog.Actions dismissLabel="Batal"><LayerDialog.Actions.Primary variant="destructive" loading={busy} onClick={() => void remove()}>Hapus</LayerDialog.Actions.Primary></LayerDialog.Actions>
-        </LayerDialog.Content>
-      </LayerDialog.Root>
+      <Dialog.Root
+        open={Boolean(deleteItem)}
+        onOpenChange={(next) => { if (!next && !busy) setDeleteItem(null); }}
+        disablePointerDismissal={busy}
+      >
+        <Dialog className="p-6">
+          <Dialog.Title>Hapus media?</Dialog.Title>
+          <Dialog.Description>{deleteItem?.originalName}</Dialog.Description>
+          <p className="mt-4">File yang masih digunakan draft atau versi terbit tidak dapat dihapus.</p>
+          <div className="mt-6 flex justify-end gap-2">
+            <Dialog.Close render={(props) => <Button {...props} variant="secondary" disabled={busy}>Batal</Button>} />
+            <Button variant="destructive" loading={busy} onClick={() => void remove()}>Hapus</Button>
+          </div>
+        </Dialog>
+      </Dialog.Root>
     </>
   );
 }
