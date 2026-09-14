@@ -8,7 +8,8 @@ const PNG_1X1 = Buffer.from(
   "base64",
 );
 
-type Manifest = { version: number; media: Array<{ id: string; url: string }> };
+type ManifestMedia = { id: string; url: string; checksum: string; [key: string]: unknown };
+type Manifest = { version: number; media: ManifestMedia[]; [key: string]: unknown };
 
 async function uploadImage(request: APIRequestContext, csrf: string, name: string) {
   const response = await request.post("/api/v1/admin/media", {
@@ -80,13 +81,34 @@ test("Kiosk keeps the previous verified version on failed staging and reloads of
   const stagedMedia = manifest2.media.find((entry) => entry.id === media2.id);
   if (!stagedMedia) throw new Error("Published V2 media was not included in the manifest");
 
-  await page.route(`**${stagedMedia.url}`, async (route) => route.fulfill({ status: 503, body: "interrupted" }));
+  await page.route("**/api/v1/kiosk/manifest", async (route) => {
+    const response = await route.fetch();
+    const body = await response.json() as Manifest;
+    await route.fulfill({
+      response,
+      json: {
+        ...body,
+        media: body.media.map((entry) => entry.id === media2.id
+          ? { ...entry, checksum: "0".repeat(64) }
+          : entry),
+      },
+    });
+  });
+  const failedSync = page.waitForRequest((incoming) => {
+    if (!incoming.url().endsWith("/api/v1/kiosk/heartbeat")) return false;
+    try {
+      return (incoming.postDataJSON() as { lastSyncStatus?: string }).lastSyncStatus === "failed";
+    } catch {
+      return false;
+    }
+  });
   await page.reload();
+  await failedSync;
   await expect.poll(() => activeVersion(page)).toBe(manifest1.version);
   await page.getByRole("button", { name: "Sentuh untuk Mulai" }).click();
   await expect(page.getByRole("button", { name: "RADMON OFFLINE1" })).toBeVisible();
 
-  await page.unroute(`**${stagedMedia.url}`);
+  await page.unroute("**/api/v1/kiosk/manifest");
   await page.reload();
   await expect.poll(() => activeVersion(page)).toBe(manifest2.version);
   await page.getByRole("button", { name: "Sentuh untuk Mulai" }).click();
