@@ -20,6 +20,8 @@ const app = await buildApp({
   logger: true,
   storagePath: env.STORAGE_PATH,
   maxUploadBytes: env.MAX_UPLOAD_BYTES,
+  kioskDeviceId: env.KIOSK_DEVICE_ID,
+  kioskDeviceToken: env.KIOSK_DEVICE_TOKEN,
 });
 
 const close = async () => {

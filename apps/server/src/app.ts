@@ -17,6 +17,10 @@ import { registerAdminAdsRoutes } from "./routes/adminAds.js";
 import { registerAdminSettingsRoutes } from "./routes/adminSettings.js";
 import { registerAdminUserRoutes } from "./routes/adminUsers.js";
 import { registerAdminDashboardRoute } from "./routes/adminDashboard.js";
+import { createPublishService } from "./publish/publishService.js";
+import { createKioskAuth, ensureKioskDevice } from "./auth/kioskAuth.js";
+import { registerAdminPublishRoutes } from "./routes/adminPublish.js";
+import { registerKioskRoutes } from "./routes/kiosk.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -32,6 +36,8 @@ export type BuildAppOptions = {
   logger?: boolean;
   storagePath?: string;
   maxUploadBytes?: number;
+  kioskDeviceId?: string;
+  kioskDeviceToken?: string | undefined;
 };
 
 export async function buildApp(options: BuildAppOptions): Promise<FastifyInstance> {
@@ -50,6 +56,10 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   const adService = createAdService(app.db, settingsService);
   const userService = createUserService(app.db);
   const dashboardService = createDashboardService(app.db, settingsService);
+  const publishService = createPublishService(app.db, settingsService);
+  const kioskDeviceId = options.kioskDeviceId ?? "kiosk-main";
+  ensureKioskDevice(app.db, kioskDeviceId, options.kioskDeviceToken, settingsService.getKioskSettings().deviceDisplayName);
+  const requireKiosk = createKioskAuth(app.db, kioskDeviceId);
 
   app.get("/api/v1/health", async () => ({ ok: true }));
   await registerAuthRoutes(app, {
@@ -63,6 +73,8 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   await registerAdminSettingsRoutes(app, settingsService);
   await registerAdminUserRoutes(app, userService);
   await registerAdminDashboardRoute(app, dashboardService);
+  await registerAdminPublishRoutes(app, publishService);
+  await registerKioskRoutes(app, publishService, kioskDeviceId, requireKiosk);
 
   app.setErrorHandler((error, _request, reply) => {
     app.log.error(error);
