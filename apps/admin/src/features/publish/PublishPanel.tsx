@@ -1,4 +1,4 @@
-import { Button, LayerDialog } from "@cloudflare/kumo";
+import { Button, Dialog } from "@cloudflare/kumo";
 import { useState } from "react";
 
 export function PublishPanel({ currentVersion, hasChanges, onPublish }: { currentVersion: number | null; hasChanges: boolean; onPublish(): Promise<void> }) {
@@ -14,16 +14,17 @@ export function PublishPanel({ currentVersion, hasChanges, onPublish }: { curren
   return (
     <>
       <Button variant="primary" disabled={!hasChanges} onClick={() => setOpen(true)}>Publish ke Kiosk</Button>
-      <LayerDialog.Root open={open} onOpenChange={(next) => !publishing && setOpen(next)} dismissDisabled={publishing}>
-        <LayerDialog.Content closeLabel="Tutup">
-          <LayerDialog.Title>{`Publish versi ${nextVersion}?`}</LayerDialog.Title>
-          <LayerDialog.Description>Semua perubahan draft saat ini akan menjadi versi konten baru untuk kiosk.</LayerDialog.Description>
-          <LayerDialog.Body>Kiosk baru mengaktifkan versi ini setelah seluruh file yang dibutuhkan berhasil diunduh dan diverifikasi.</LayerDialog.Body>
-          <LayerDialog.Actions dismissLabel="Batal">
-            <LayerDialog.Actions.Primary loading={publishing} onClick={() => void publish()}>Publish sekarang</LayerDialog.Actions.Primary>
-          </LayerDialog.Actions>
-        </LayerDialog.Content>
-      </LayerDialog.Root>
+      <Dialog.Root open={open} onOpenChange={(next) => { if (!publishing) setOpen(next); }} disablePointerDismissal={publishing}>
+        <Dialog className="p-6">
+          <Dialog.Title>{`Publish versi ${nextVersion}?`}</Dialog.Title>
+          <Dialog.Description>Semua perubahan draft saat ini akan menjadi versi konten baru untuk kiosk.</Dialog.Description>
+          <p className="mt-4">Kiosk baru mengaktifkan versi ini setelah seluruh file yang dibutuhkan berhasil diunduh dan diverifikasi.</p>
+          <div className="mt-6 flex justify-end gap-2">
+            <Button variant="secondary" disabled={publishing} onClick={() => setOpen(false)}>Batal</Button>
+            <Button variant="primary" loading={publishing} onClick={() => void publish()}>Publish sekarang</Button>
+          </div>
+        </Dialog>
+      </Dialog.Root>
     </>
   );
 }
