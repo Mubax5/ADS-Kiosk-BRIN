@@ -1,5 +1,4 @@
-import { Button } from "@cloudflare/kumo";
-import { LayerDialog } from "@cloudflare/kumo/components/layer-dialog";
+import { Button, Dialog } from "@cloudflare/kumo";
 import { useState } from "react";
 
 export function PublishPanel({ currentVersion, hasChanges, onPublish }: { currentVersion: number | null; hasChanges: boolean; onPublish(): Promise<void> }) {
@@ -13,14 +12,21 @@ export function PublishPanel({ currentVersion, hasChanges, onPublish }: { curren
   }
 
   return (
-    <LayerDialog.Root open={open} onOpenChange={setOpen} dismissDisabled={publishing}>
-      <LayerDialog.Trigger render={(props) => <Button {...props} variant="primary" disabled={!hasChanges}>Publish ke Kiosk</Button>} />
-      <LayerDialog.Content closeLabel="Tutup">
-        <LayerDialog.Title>{`Publish versi ${nextVersion}?`}</LayerDialog.Title>
-        <LayerDialog.Description>Semua perubahan draft saat ini akan menjadi versi konten baru untuk kiosk.</LayerDialog.Description>
-        <LayerDialog.Body><p>Kiosk baru mengaktifkan versi ini setelah seluruh file yang dibutuhkan berhasil diunduh dan diverifikasi.</p></LayerDialog.Body>
-        <LayerDialog.Actions dismissLabel="Batal"><LayerDialog.Actions.Primary loading={publishing} onClick={() => void publish()}>Publish sekarang</LayerDialog.Actions.Primary></LayerDialog.Actions>
-      </LayerDialog.Content>
-    </LayerDialog.Root>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(next) => { if (!publishing) setOpen(next); }}
+      disablePointerDismissal={publishing}
+    >
+      <Dialog.Trigger render={(props) => <Button {...props} variant="primary" disabled={!hasChanges}>Publish ke Kiosk</Button>} />
+      <Dialog className="p-6">
+        <Dialog.Title>{`Publish versi ${nextVersion}?`}</Dialog.Title>
+        <Dialog.Description>Semua perubahan draft saat ini akan menjadi versi konten baru untuk kiosk.</Dialog.Description>
+        <p className="mt-4">Kiosk baru mengaktifkan versi ini setelah seluruh file yang dibutuhkan berhasil diunduh dan diverifikasi.</p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Dialog.Close render={(props) => <Button {...props} variant="secondary" disabled={publishing}>Batal</Button>} />
+          <Button variant="primary" loading={publishing} onClick={() => void publish()}>Publish sekarang</Button>
+        </div>
+      </Dialog>
+    </Dialog.Root>
   );
 }
