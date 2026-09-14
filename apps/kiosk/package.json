@@ -27,6 +27,7 @@
     "jsdom": "latest",
     "typescript": "^5.9.2",
     "vite": "latest",
+    "vite-plugin-pwa": "latest",
     "vitest": "^3.2.4"
   }
 }
