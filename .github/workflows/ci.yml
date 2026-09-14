@@ -16,7 +16,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: npm run test:unit
+      - name: Run unit tests with diagnostic capture
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run test:unit 2>&1 | tee unit.log
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ]; then
+            tail -c 50000 unit.log > unit-tail.log
+            gh issue comment 1 --body-file unit-tail.log
+            exit "$code"
+          fi
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Run E2E with diagnostic capture
