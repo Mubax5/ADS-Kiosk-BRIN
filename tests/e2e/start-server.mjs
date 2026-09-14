@@ -1,9 +1,14 @@
+import { randomBytes } from "node:crypto";
 import { rmSync } from "node:fs";
 import { spawn, spawnSync } from "node:child_process";
 import process from "node:process";
 
 const root = process.cwd();
-const token = "e2e-device-token-for-automated-tests-only";
+const token = randomBytes(32).toString("base64url");
+const adminUsername = process.env.E2E_ADMIN_USERNAME;
+const adminPassword = process.env.E2E_ADMIN_PASSWORD;
+if (!adminUsername || !adminPassword) throw new Error("Playwright must provide E2E admin credentials");
+
 const env = {
   ...process.env,
   NODE_ENV: "production",
@@ -16,7 +21,7 @@ const env = {
   BACKUP_PATH: "./backups-e2e",
   LOG_PATH: "./logs-e2e",
   RUN_LOCK_PATH: "./data/e2e/server.lock",
-  COOKIE_SECRET: "e2e-cookie-secret-for-automated-tests-only",
+  COOKIE_SECRET: randomBytes(32).toString("base64url"),
   COOKIE_SECURE: "false",
   SESSION_TTL_HOURS: "8",
   MAX_UPLOAD_BYTES: "10485760",
@@ -24,8 +29,8 @@ const env = {
   KIOSK_DEVICE_TOKEN: token,
   VITE_KIOSK_DEVICE_TOKEN: token,
   VITE_KIOSK_SOFTWARE_VERSION: "0.1.0-e2e",
-  BOOTSTRAP_ADMIN_USERNAME: "e2e-admin",
-  BOOTSTRAP_ADMIN_PASSWORD: "e2e-password-for-tests-only",
+  BOOTSTRAP_ADMIN_USERNAME: adminUsername,
+  BOOTSTRAP_ADMIN_PASSWORD: adminPassword,
 };
 
 for (const path of ["./data/e2e", "./storage-e2e", "./backups-e2e", "./logs-e2e"]) {
