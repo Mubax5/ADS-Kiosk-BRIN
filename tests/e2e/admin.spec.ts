@@ -6,9 +6,12 @@ const PNG_1X1 = Buffer.from(
 );
 
 async function login(page: Page) {
+  const username = process.env.E2E_ADMIN_USERNAME;
+  const password = process.env.E2E_ADMIN_PASSWORD;
+  if (!username || !password) throw new Error("Missing ephemeral E2E admin credentials");
   await page.goto("/admin/");
-  await page.getByLabel("Username").fill("e2e-admin");
-  await page.getByLabel("Password").fill("e2e-password-for-tests-only");
+  await page.getByLabel("Username").fill(username);
+  await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Masuk" }).click();
   await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
 }
