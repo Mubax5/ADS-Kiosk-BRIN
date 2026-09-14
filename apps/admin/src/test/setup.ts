@@ -25,3 +25,13 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: () => false,
   }),
 });
+
+Object.defineProperty(Element.prototype, "getAnimations", {
+  value: () => [],
+  configurable: true,
+});
+
+Object.defineProperty(Element.prototype, "scrollTo", {
+  value: () => undefined,
+  configurable: true,
+});
