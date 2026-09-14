@@ -4,7 +4,7 @@ import multipart from "@fastify/multipart";
 import rateLimit from "@fastify/rate-limit";
 import staticPlugin from "@fastify/static";
 import { existsSync } from "node:fs";
-import Fastify, { type FastifyInstance } from "fastify";
+import Fastify, { type FastifyBaseLogger, type FastifyInstance } from "fastify";
 import { createKioskAuth, ensureKioskDevice } from "./auth/kioskAuth.js";
 import type { SqliteDatabase } from "./db/database.js";
 import { createMediaService } from "./media/mediaService.js";
@@ -38,6 +38,7 @@ export type BuildAppOptions = {
   cookieSecure: boolean;
   sessionTtlHours: number;
   logger?: boolean;
+  loggerInstance?: FastifyBaseLogger;
   storagePath?: string;
   maxUploadBytes?: number;
   kioskDeviceId?: string;
@@ -75,7 +76,9 @@ async function registerStaticApps(app: FastifyInstance, adminDistPath?: string, 
 }
 
 export async function buildApp(options: BuildAppOptions): Promise<FastifyInstance> {
-  const app = Fastify({ logger: options.logger ?? false });
+  const app = options.loggerInstance
+    ? Fastify({ loggerInstance: options.loggerInstance })
+    : Fastify({ logger: options.logger ?? false });
   app.decorate("db", options.db);
   app.decorateRequest("cmsUser");
   app.decorateRequest("cmsSession");
