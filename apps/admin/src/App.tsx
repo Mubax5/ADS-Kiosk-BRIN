@@ -2,17 +2,13 @@ import { LayerCard } from "@cloudflare/kumo";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./auth/AuthProvider";
 import { AdminLayout } from "./layouts/AdminLayout";
+import { AdsPage } from "./pages/AdsPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LoginPage } from "./pages/LoginPage";
-
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <section className="cms-page">
-      <header className="cms-page-header"><h1 className="cms-page-title">{title}</h1></header>
-      <LayerCard className="cms-metric"><p>Bagian ini akan dilengkapi pada tahap CMS berikutnya.</p></LayerCard>
-    </section>
-  );
-}
+import { MediaPage } from "./pages/MediaPage";
+import { MenuPage } from "./pages/MenuPage";
+import { PreviewPage } from "./pages/PreviewPage";
+import { SettingsPage } from "./pages/SettingsPage";
 
 export function App() {
   const { user, loading } = useAuth();
@@ -23,11 +19,11 @@ export function App() {
     <AdminLayout>
       <Routes>
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/menu" element={<PlaceholderPage title="Menu & Konten" />} />
-        <Route path="/ads" element={<PlaceholderPage title="Ads" />} />
-        <Route path="/media" element={<PlaceholderPage title="Media" />} />
-        <Route path="/preview" element={<PlaceholderPage title="Preview" />} />
-        <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+        <Route path="/menu" element={<MenuPage />} />
+        <Route path="/ads" element={<AdsPage />} />
+        <Route path="/media" element={<MediaPage />} />
+        <Route path="/preview" element={<PreviewPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AdminLayout>
