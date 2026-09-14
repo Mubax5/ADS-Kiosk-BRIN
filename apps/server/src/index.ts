@@ -18,6 +18,8 @@ const app = await buildApp({
   cookieSecure: env.COOKIE_SECURE,
   sessionTtlHours: env.SESSION_TTL_HOURS,
   logger: true,
+  storagePath: env.STORAGE_PATH,
+  maxUploadBytes: env.MAX_UPLOAD_BYTES,
 });
 
 const close = async () => {

@@ -1,8 +1,12 @@
 import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
+import multipart from "@fastify/multipart";
 import Fastify, { type FastifyInstance } from "fastify";
 import type { SqliteDatabase } from "./db/database.js";
 import { registerAuthRoutes } from "./routes/auth.js";
+import { createMediaService } from "./media/mediaService.js";
+import { registerAdminMediaRoutes } from "./routes/adminMedia.js";
+import { registerPublicMediaRoutes } from "./routes/media.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -16,6 +20,8 @@ export type BuildAppOptions = {
   cookieSecure: boolean;
   sessionTtlHours: number;
   logger?: boolean;
+  storagePath?: string;
+  maxUploadBytes?: number;
 };
 
 export async function buildApp(options: BuildAppOptions): Promise<FastifyInstance> {
@@ -26,12 +32,17 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
 
   await app.register(cookie, { secret: options.cookieSecret });
   await app.register(rateLimit, { global: false });
+  const maxUploadBytes = options.maxUploadBytes ?? 524_288_000;
+  await app.register(multipart, { limits: { fileSize: maxUploadBytes, files: 1, parts: 1 }, throwFileSizeLimit: true });
+  const mediaService = createMediaService(app.db, options.storagePath ?? "./storage", maxUploadBytes);
 
   app.get("/api/v1/health", async () => ({ ok: true }));
   await registerAuthRoutes(app, {
     cookieSecure: options.cookieSecure,
     sessionTtlHours: options.sessionTtlHours,
   });
+  await registerAdminMediaRoutes(app, mediaService);
+  await registerPublicMediaRoutes(app, mediaService);
 
   app.setErrorHandler((error, _request, reply) => {
     app.log.error(error);
