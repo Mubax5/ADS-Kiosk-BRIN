@@ -1,5 +1,5 @@
 import type { MenuItem } from "@ads-kiosk/shared";
-import { Button, LayerDialog } from "@cloudflare/kumo";
+import { Button, Dialog } from "@cloudflare/kumo";
 import { useCallback, useEffect, useState } from "react";
 import { apiClient } from "../api/client";
 import { useAuth } from "../auth/AuthProvider";
@@ -26,16 +26,17 @@ export function MenuPage() {
     <section className="cms-page">
       <header className="cms-page-header"><div><h1 className="cms-page-title">Menu & Konten</h1><p className="cms-page-description">Kelola layanan dan tipe konten yang tampil di kiosk.</p></div><Button variant="primary" onClick={() => { setCreating(true); setEditing(newItem()); }}>Tambah Menu</Button></header>
       {editing ? <MenuEditor value={editing} media={media} onSave={save} onCancel={() => { setEditing(null); setCreating(false); }} /> : <MenuTable items={items} onEdit={(item) => { setCreating(false); setEditing(item); }} onDelete={setDeleting} />}
-      <LayerDialog.Root open={Boolean(deleting)} onOpenChange={(open) => !open && setDeleting(null)}>
-        <LayerDialog.Content closeLabel="Tutup">
-          <LayerDialog.Title>Hapus menu?</LayerDialog.Title>
-          <LayerDialog.Description>{deleting?.name}</LayerDialog.Description>
-          <LayerDialog.Body>Penghapusan mengubah draft. Kiosk tidak berubah sampai konten dipublish.</LayerDialog.Body>
-          <LayerDialog.Actions dismissLabel="Batal">
-            <LayerDialog.Actions.Primary variant="destructive" onClick={() => void remove()}>Hapus</LayerDialog.Actions.Primary>
-          </LayerDialog.Actions>
-        </LayerDialog.Content>
-      </LayerDialog.Root>
+      <Dialog.Root open={Boolean(deleting)} onOpenChange={(open) => { if (!open) setDeleting(null); }}>
+        <Dialog className="p-6">
+          <Dialog.Title>Hapus menu?</Dialog.Title>
+          <Dialog.Description>{deleting?.name}</Dialog.Description>
+          <p className="mt-4">Penghapusan mengubah draft. Kiosk tidak berubah sampai konten dipublish.</p>
+          <div className="mt-6 flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setDeleting(null)}>Batal</Button>
+            <Button variant="destructive" onClick={() => void remove()}>Hapus</Button>
+          </div>
+        </Dialog>
+      </Dialog.Root>
     </section>
   );
 }
