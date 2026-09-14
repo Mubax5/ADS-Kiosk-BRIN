@@ -2,15 +2,20 @@
   "name": "ads-kiosk-brin",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": ">=22" },
-  "workspaces": ["apps/*", "packages/*"],
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "test:unit": "npm run test --workspaces --if-present -- --run",
     "test:e2e": "playwright test",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run build --workspace @ads-kiosk/shared && npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
