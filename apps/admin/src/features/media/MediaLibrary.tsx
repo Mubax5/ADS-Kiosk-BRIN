@@ -1,4 +1,5 @@
-import { Badge, Button, LayerDialog, Table } from "@cloudflare/kumo";
+import { Badge, Button, Table } from "@cloudflare/kumo";
+import { LayerDialog } from "@cloudflare/kumo/components/layer-dialog";
 import { useRef, useState } from "react";
 import { apiRequest } from "../../api/client";
 import { useAuth } from "../../auth/AuthProvider";
@@ -53,37 +54,24 @@ export function MediaLibrary({ items, onChange }: { items: MediaRecord[]; onChan
   return (
     <>
       <div className="cms-toolbar">
-        <input
-          ref={fileInput}
-          className="cms-file-input"
-          type="file"
-          accept="image/png,image/jpeg,image/webp,video/mp4,video/webm,application/pdf"
-          aria-label="Pilih file media"
-          onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload(file); }}
-        />
+        <input ref={fileInput} className="cms-file-input" type="file" accept="image/png,image/jpeg,image/webp,video/mp4,video/webm,application/pdf" aria-label="Pilih file media" onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload(file); }} />
         <Button variant="primary" loading={busy} onClick={() => fileInput.current?.click()}>Upload Media</Button>
       </div>
       <Table>
         <Table.Header><Table.Row><Table.Head>File</Table.Head><Table.Head>Kategori</Table.Head><Table.Head>Ukuran</Table.Head><Table.Head>Aksi</Table.Head></Table.Row></Table.Header>
-        <Table.Body>
-          {items.map((item) => (
-            <Table.Row key={item.id}>
-              <Table.Cell>{item.originalName}</Table.Cell>
-              <Table.Cell><Badge>{item.category}</Badge></Table.Cell>
-              <Table.Cell>{prettyBytes(item.byteSize)}</Table.Cell>
-              <Table.Cell><Button variant="secondary" onClick={() => setDeleteItem(item)}>Hapus</Button></Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
+        <Table.Body>{items.map((item) => (
+          <Table.Row key={item.id}>
+            <Table.Cell>{item.originalName}</Table.Cell><Table.Cell><Badge>{item.category}</Badge></Table.Cell><Table.Cell>{prettyBytes(item.byteSize)}</Table.Cell>
+            <Table.Cell><Button variant="secondary" onClick={() => setDeleteItem(item)}>Hapus</Button></Table.Cell>
+          </Table.Row>
+        ))}</Table.Body>
       </Table>
-      <LayerDialog.Root open={Boolean(deleteItem)} onOpenChange={(next) => !next && setDeleteItem(null)} dismissDisabled={busy}>
+      <LayerDialog.Root open={Boolean(deleteItem)} onOpenChange={(next: boolean) => !next && setDeleteItem(null)} dismissDisabled={busy}>
         <LayerDialog.Content closeLabel="Tutup">
           <LayerDialog.Title>Hapus media?</LayerDialog.Title>
           <LayerDialog.Description>{deleteItem?.originalName}</LayerDialog.Description>
           <LayerDialog.Body>File yang masih digunakan draft atau versi terbit tidak dapat dihapus.</LayerDialog.Body>
-          <LayerDialog.Actions dismissLabel="Batal">
-            <LayerDialog.Actions.Primary variant="destructive" loading={busy} onClick={() => void remove()}>Hapus</LayerDialog.Actions.Primary>
-          </LayerDialog.Actions>
+          <LayerDialog.Actions dismissLabel="Batal"><LayerDialog.Actions.Primary variant="destructive" loading={busy} onClick={() => void remove()}>Hapus</LayerDialog.Actions.Primary></LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Root>
     </>
