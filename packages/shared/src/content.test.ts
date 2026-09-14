@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { menuItemSchema } from "./content";
+import { menuItemSchema } from "./content.js";
 
 describe("menuItemSchema", () => {
   it("rejects a website item with a non-http URL", () => {

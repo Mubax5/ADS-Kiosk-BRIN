@@ -1,3 +1,3 @@
-export * from "./api";
-export * from "./content";
-export * from "./manifest";
+export * from "./api.js";
+export * from "./content.js";
+export * from "./manifest.js";

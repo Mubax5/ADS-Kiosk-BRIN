@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { adItemSchema, kioskSettingsSchema, menuItemSchema } from "./content";
+import { adItemSchema, kioskSettingsSchema, menuItemSchema } from "./content.js";
 
 export const manifestMediaSchema = z.object({
   id: z.string().uuid(),
