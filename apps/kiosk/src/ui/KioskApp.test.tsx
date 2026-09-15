@@ -40,10 +40,12 @@ describe("KioskApp", () => {
     expect(screen.queryByText("Pilih layanan")).not.toBeInTheDocument();
   });
 
-  it("opens a simple text-first home menu after touch", () => {
+  it("opens a BRIN public-service directory after touch", () => {
     render(<KioskApp manifest={manifest} />);
     fireEvent.click(screen.getByRole("button", { name: "Sentuh untuk Mulai" }));
 
+    expect(screen.getByLabelText("Identitas BRIN")).toHaveTextContent("Badan Riset dan Inovasi Nasional");
+    expect(screen.getByRole("region", { name: "Direktori layanan BRIN" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Pilih layanan" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "RADMON" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "WEB BRIN" })).toBeInTheDocument();
