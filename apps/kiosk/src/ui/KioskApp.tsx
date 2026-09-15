@@ -28,9 +28,13 @@ function ContentView({ manifest, item, onBack }: { manifest: PublishedManifest; 
     else if (config.type === "image") body = <ImageContent src={src} caption={config.caption} />;
     else body = <VideoContent src={src} title={config.title} />;
   }
+
   return (
     <section className="kiosk-content-shell">
-      <div className="kiosk-content-nav"><button type="button" onClick={onBack}>Kembali ke Menu</button><span>BRIN</span></div>
+      <div className="kiosk-content-nav">
+        <button type="button" onClick={onBack}>← Kembali ke Menu</button>
+        <div className="kiosk-content-brand" aria-label="BRIN">BRIN</div>
+      </div>
       <div className="kiosk-content-body">{body}</div>
     </section>
   );
@@ -55,7 +59,6 @@ export function KioskApp({ manifest }: { manifest: PublishedManifest }) {
   function visitorActivity() {
     if (session.state !== "idle") setSession(machine.activity(Date.now()));
   }
-
   function start() { setSession(machine.start(Date.now())); }
   function open(item: MenuItem) { setSession(machine.openContent(item.id, Date.now())); }
   function home() { setSession(machine.goHome(Date.now())); }

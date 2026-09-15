@@ -4,20 +4,32 @@ export function HomeScreen({ deviceName, items, onOpen }: { deviceName: string; 
   return (
     <section className="kiosk-home" aria-label="Menu layanan">
       <header className="kiosk-header">
-        <div className="kiosk-brand">BRIN</div>
+        <div className="kiosk-brand-lockup" aria-label="Identitas BRIN">
+          <span className="kiosk-brand-mark" aria-hidden="true">BRIN</span>
+          <span className="kiosk-brand-name">Badan Riset dan Inovasi Nasional</span>
+        </div>
         <div className="kiosk-device-name">{deviceName}</div>
       </header>
-      <div className="kiosk-home-body">
-        <h1>Pilih layanan</h1>
-        <div className="kiosk-menu-grid">
-          {items.map((item) => (
+
+      <section className="kiosk-home-body" aria-label="Direktori layanan BRIN">
+        <div className="kiosk-home-heading">
+          <h1>Pilih layanan</h1>
+          <p>Sentuh layanan yang ingin Anda akses.</p>
+        </div>
+
+        <div className="kiosk-service-directory">
+          {items.map((item, index) => (
             <button key={item.id} type="button" className="kiosk-menu-button" onClick={() => onOpen(item)}>
-              <span>{item.name}</span>
-              {item.description ? <small>{item.description}</small> : null}
+              <span className="kiosk-menu-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <span className="kiosk-menu-copy">
+                <strong>{item.name}</strong>
+                {item.description ? <small>{item.description}</small> : null}
+              </span>
+              <span className="kiosk-menu-arrow" aria-hidden="true">→</span>
             </button>
           ))}
         </div>
-      </div>
+      </section>
     </section>
   );
 }

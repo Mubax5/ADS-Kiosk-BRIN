@@ -20,8 +20,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       <nav aria-label="Navigasi CMS" className="cms-sidebar-nav">
         <Sidebar>
           <Sidebar.Header>
-            <div className="px-3 py-3">
-              <strong>BRIN Kiosk CMS</strong>
+            <div className="cms-brand" aria-label="Identitas BRIN CMS">
+              <span className="cms-brand-mark" aria-hidden="true">BRIN</span>
+              <span className="cms-brand-copy">
+                <strong>Badan Riset dan Inovasi Nasional</strong>
+                <small>Kiosk CMS</small>
+              </span>
             </div>
           </Sidebar.Header>
           <Sidebar.Content>

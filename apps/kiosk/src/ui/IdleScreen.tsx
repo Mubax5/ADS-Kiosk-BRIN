@@ -26,13 +26,25 @@ export function IdleScreen({ manifest, onStart }: { manifest: PublishedManifest;
   return (
     <section className="kiosk-idle" aria-label="Layar informasi">
       <div className="kiosk-idle-media" aria-hidden="true">
-        {!media ? <div className="kiosk-idle-fallback"><strong>BRIN</strong><span>Informasi dan layanan</span></div> : null}
+        {!media ? (
+          <div className="kiosk-idle-fallback">
+            <div className="kiosk-idle-brand">BRIN</div>
+            <div className="kiosk-idle-copy">
+              <strong>Badan Riset dan Inovasi Nasional</strong>
+              <span>Informasi dan layanan publik</span>
+            </div>
+          </div>
+        ) : null}
         {media && ad?.mediaType === "image" ? <img src={media.url} alt="" /> : null}
         {media && ad?.mediaType === "video" ? (
           <video key={`${manifest.version}-${ad.id}`} src={media.url} autoPlay muted playsInline onEnded={() => setIndex((value) => value + 1)} />
         ) : null}
       </div>
-      <div className="kiosk-start-bar">
+      <div className="kiosk-start-panel">
+        <div className="kiosk-start-copy">
+          <strong>Layanan BRIN</strong>
+          <span>Akses informasi dan layanan dari layar ini.</span>
+        </div>
         <button type="button" className="kiosk-start-button" onClick={onStart}>Sentuh untuk Mulai</button>
       </div>
     </section>

@@ -2,34 +2,59 @@
 @import "@cloudflare/kumo/styles/tailwind";
 @import "tailwindcss";
 
+:root {
+  --brin-red: #d91f2b;
+  --brin-red-dark: #a9151f;
+  --brin-ink: #202124;
+  --brin-muted: #6a6f75;
+  --brin-line: #e0e3e6;
+  --brin-soft: #f7f7f7;
+}
+
 html, body, #root { min-height: 100%; margin: 0; }
-body { min-width: 1024px; background: var(--color-kumo-base, #f7f7f8); }
-.cms-shell { min-height: 100vh; }
+body { min-width: 1024px; background: #fff; color: var(--brin-ink); }
+.cms-shell { min-height: 100vh; background: #fff; }
 .cms-sidebar-nav { display: contents; }
-.cms-main { min-width: 0; min-height: 100vh; padding: 2rem; overflow: auto; }
+.cms-main { min-width: 0; min-height: 100vh; padding: 2rem 2.25rem 3rem; overflow: auto; background: #fff; border-top: 6px solid var(--brin-red); }
 .cms-page { width: min(1180px, 100%); margin: 0 auto; }
-.cms-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
-.cms-page-title { margin: 0; font-size: 1.75rem; line-height: 1.2; font-weight: 650; }
-.cms-page-description { max-width: 60rem; margin: .45rem 0 0; color: var(--color-kumo-subtle, #5f6368); }
-.cms-metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-.cms-metric { padding: 1rem; }
-.cms-metric-label { margin: 0 0 .5rem; color: var(--color-kumo-subtle, #5f6368); font-size: .875rem; }
-.cms-metric-value { margin: 0; font-size: 1.35rem; font-weight: 600; }
-.login-shell { display: grid; min-height: 100vh; place-items: center; padding: 2rem; }
-.login-card { width: min(420px, 100%); padding: 1.5rem; }
-.login-card h1 { margin: 0 0 .5rem; font-size: 1.5rem; font-weight: 650; }
-.login-card p { margin: 0 0 1.5rem; }
+.cms-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.6rem; padding-bottom: 1.15rem; border-bottom: 1px solid var(--brin-line); }
+.cms-page-title { margin: 0; font-size: 1.8rem; line-height: 1.2; font-weight: 720; letter-spacing: -.025em; }
+.cms-page-description { max-width: 60rem; margin: .45rem 0 0; color: var(--brin-muted); }
+
+.cms-brand { display: flex; align-items: center; gap: .8rem; padding: 1rem .85rem 1.15rem; border-top: 5px solid var(--brin-red); border-bottom: 1px solid var(--brin-line); }
+.cms-brand-mark { flex: 0 0 auto; color: var(--brin-red); font-size: 1.55rem; font-weight: 900; letter-spacing: -.06em; line-height: 1; }
+.cms-brand-copy { min-width: 0; display: grid; gap: .14rem; }
+.cms-brand-copy strong { max-width: 11rem; font-size: .78rem; line-height: 1.12; font-weight: 760; }
+.cms-brand-copy small { color: var(--brin-muted); font-size: .72rem; }
+
+.cms-metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--brin-line); border-left: 1px solid var(--brin-line); }
+.cms-metric { padding: 1.15rem 1.2rem; border-right: 1px solid var(--brin-line); border-bottom: 1px solid var(--brin-line); background: #fff; }
+.cms-metric-label { margin: 0 0 .55rem; color: var(--brin-muted); font-size: .8rem; text-transform: none; }
+.cms-metric-value { margin: 0; font-size: 1.45rem; font-weight: 720; letter-spacing: -.02em; }
+
+.login-shell { display: grid; min-height: 100vh; place-items: center; padding: 2rem; background: #fff; border-top: 8px solid var(--brin-red); }
+.login-card { width: min(430px, 100%); padding: 1.75rem; border: 1px solid var(--brin-line); border-radius: 2px; box-shadow: none; }
+.login-card::before { content: "BRIN"; display: block; margin-bottom: 1.2rem; color: var(--brin-red); font-size: 2rem; font-weight: 900; letter-spacing: -.06em; }
+.login-card h1 { margin: 0 0 .5rem; font-size: 1.5rem; font-weight: 720; letter-spacing: -.02em; }
+.login-card p { margin: 0 0 1.5rem; color: var(--brin-muted); }
 .login-form, .cms-form, .cms-stack { display: grid; gap: 1rem; }
 .login-error { margin: 0; font-size: .875rem; }
-.cms-editor-card { padding: 1.25rem; }
+
+.cms-editor-card { padding: 1.25rem; border-radius: 2px; box-shadow: none; }
 .cms-editor-card h2 { margin: 0 0 1rem; font-size: 1.1rem; }
-.cms-table-card { padding: 0; overflow: hidden; }
+.cms-table-card { padding: 0; overflow: hidden; border-radius: 2px; box-shadow: none; }
 .cms-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .cms-actions, .cms-inline-actions, .cms-toolbar, .cms-status-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
 .cms-actions { justify-content: flex-end; }
-.cms-toolbar { justify-content: flex-end; padding: 1rem; }
+.cms-toolbar { justify-content: flex-end; padding: 1rem; border-top: 1px solid var(--brin-line); }
 .cms-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-.cms-preview-card { padding: 1rem; }
-.cms-preview-frame { display: block; width: min(100%, 800px); aspect-ratio: 9 / 16; margin: 0 auto; border: 1px solid currentColor; background: #111; }
+.cms-preview-card { padding: 1rem; border-radius: 2px; }
+.cms-preview-frame { display: block; width: min(100%, 800px); aspect-ratio: 9 / 16; margin: 0 auto; border: 1px solid #bfc4c9; background: #fff; }
 .cms-user-create { margin-bottom: 1.25rem; align-items: end; }
+
+.cms-main button[data-variant="primary"],
+.cms-main [data-slot="button"][data-variant="primary"] { background: var(--brin-red); border-color: var(--brin-red); }
+.cms-main button[data-variant="primary"]:hover,
+.cms-main [data-slot="button"][data-variant="primary"]:hover { background: var(--brin-red-dark); border-color: var(--brin-red-dark); }
+
 @media (max-width: 1100px) { .cms-metric-grid, .cms-form-grid { grid-template-columns: 1fr 1fr; } }
