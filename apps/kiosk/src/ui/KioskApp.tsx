@@ -32,7 +32,7 @@ function ContentView({ manifest, item, onBack }: { manifest: PublishedManifest; 
   return (
     <section className="kiosk-content-shell">
       <div className="kiosk-content-nav">
-        <button type="button" onClick={onBack}>← Kembali ke Menu</button>
+        <button type="button" aria-label="Kembali ke Menu" onClick={onBack}>← Kembali ke Menu</button>
         <div className="kiosk-content-brand" aria-label="BRIN">BRIN</div>
       </div>
       <div className="kiosk-content-body">{body}</div>

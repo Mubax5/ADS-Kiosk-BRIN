@@ -19,9 +19,9 @@ export function HomeScreen({ deviceName, items, onOpen }: { deviceName: string; 
 
         <div className="kiosk-service-directory">
           {items.map((item, index) => (
-            <button key={item.id} type="button" className="kiosk-menu-button" onClick={() => onOpen(item)}>
+            <button key={item.id} type="button" className="kiosk-menu-button" aria-label={item.name} onClick={() => onOpen(item)}>
               <span className="kiosk-menu-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <span className="kiosk-menu-copy">
+              <span className="kiosk-menu-copy" aria-hidden="true">
                 <strong>{item.name}</strong>
                 {item.description ? <small>{item.description}</small> : null}
               </span>
